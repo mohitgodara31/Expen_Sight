@@ -1,0 +1,76 @@
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = "5"
+  interface            = "asyncio"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  hashedPassword String
+  created_at     DateTime  @default(now())
+  baseCurrency String @default("INR")
+  Receipts       Receipts[]
+  Reconcile      Reconcile[]
+  Expense       Expense[]
+
+  @@map("users")
+}
+
+model Receipts {
+  id         Int      @id @default(autoincrement())
+  filename   String
+  uploadedAt DateTime @default(now())
+  userId Int   
+  expenseId Int?     @unique
+
+  expense  Expense? @relation(fields: [expenseId], references: [id])
+  user   Users @relation(fields: [userId], references: [id])
+
+  @@map("receipts")
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  currency String
+  category  String
+  date      DateTime
+  userId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status             ReconciliationStatus @default(PENDING)
+  convertedAmount    Float?
+  conversionCurrency String?               
+  // 🔗 One-to-one with Receipt
+  receipt Receipts?
+  reconciliations Reconcile[]
+
+  user Users @relation(fields: [userId],references: [id])
+  @@map("expenses")
+}
+enum ReconciliationStatus {
+  PENDING
+  RECONCILED
+}
+
+model Reconcile{
+  id Int @id @default(autoincrement())
+  convertedAmount Float
+  baseCurrency String
+  conversionCurrency String
+  fxRate Float
+  createdAt DateTime @default(now())
+  expenseId Int
+  userId Int
+
+  expense Expense @relation(fields: [expenseId],references: [id])
+  user Users @relation(fields: [userId],references: [id])
+
+  @@map("reconcile")
+}
