@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+/* Add these animations for the background blobs */
+@keyframes blob-animation-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(20px, -30px) scale(1.1); }
+  50% { transform: translate(-20px, 40px) scale(0.9); }
+  75% { transform: translate(10px, 10px) scale(1.05); }
+}
+
+@keyframes blob-animation-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-15px, 25px) scale(0.9); }
+  50% { transform: translate(25px, -15px) scale(1.1); }
+  75% { transform: translate(-5px, -5px) scale(1); }
+}
